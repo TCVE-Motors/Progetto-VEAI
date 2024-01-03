@@ -26,7 +26,7 @@ The user manual and guide for vehicle interaction called "VEAImanuale" or "VEAIm
 
 ## License
 
-Software: (Files like "veai.ino" and "veaiGUI") [GNU GPL-3.0] [ https://www.gnu.org/licenses/gpl-3.0.html#license-text ]
+Software: (Files like "veai.ino" and "VEAIgui") [GNU GPL-3.0] [ https://www.gnu.org/licenses/gpl-3.0.html#license-text ]
 
 
 ## Attribution
