@@ -11,7 +11,7 @@ The VEAI Project (Intelligent Artisan Electric Vehicle), consists of a compact s
 
 ## Authors
 
-- [Authors] [Ferrara Davide] ( https://github.com/LAYATORS )
+- [Authors] [Ferrara Davide] ( https://github.com/FerraraDavideG )
 
 
 ## Documentation
