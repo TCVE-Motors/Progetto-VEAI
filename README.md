@@ -6,7 +6,7 @@ Progetto VEAI (Intelligent Artisan Electric Vehicle), consists of a compact sing
 ## Acknowledgments
 
  - [TCVE Motors official website] ( https://tcvemotors.webflow.io/ )
- - [Post VEAI Project] (https://tcvemotors.webflow.io/progetti/progettoveai)
+ - [VEAI Project post] (https://tcvemotors.webflow.io/progetti/progettoveai)
 
 
 ## Authors
