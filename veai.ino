@@ -6,7 +6,7 @@
 
   -----------------------------------------------------------------------------
 
-  Copyright (C) 2023  TCVE Motors.
+  Copyright (C) 2023  Ferrara Davide Giacomo.
   
   This file is part of Progetto VEAI
 
@@ -30,11 +30,11 @@
 #include <DHT.h>       // Includes the DHT library to use the DHT22 sensor.
 #include <MQ135.h>     // Includes the MQ135 library to use the MQ-135 sensor.
 
-#define DHTPIN 4       // DHT22 data pin.
+#define DHTPIN 4       // DHT22 pin.
 #define DHTTYPE DHT11  // DHT sensor type.
 DHT dht(DHTPIN, DHTTYPE);
 
-#define MQ135PIN A0    // MQ-135 data pin.
+#define MQ135PIN A0    // MQ-135 sensor pin-
 MQ135 mq135 = MQ135(MQ135PIN);
 
 int maxTM = 0;              // Variable to record the maximum temperature of TMP36GT9Z (engine)
