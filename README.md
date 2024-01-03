@@ -26,8 +26,6 @@ The user manual and guide for vehicle interaction called "VEAImanuale" or "VEAIm
 
 ## License
 
-Hardware: (General vehicle structure, electrical diagram and electronic configuration) [CERN-OHL-S V2] [ https://ohwr.org/cern_ohl_s_v2.txt ]
-
 Software: (Files like "veai.ino" and "veaiGUI") [GNU GPL-3.0] [ https://www.gnu.org/licenses/gpl-3.0.html#license-text ]
 
 
