@@ -1,6 +1,6 @@
 # VEAI Project (Progetto VEAI)
 
-The VEAI Project (Intelligent Artisan Electric Vehicle), consists of a compact single-seater, renewable, 100% Open-Source and electric vehicle for the good of humanity developed by Ferrara Davide Giacomo and his TCVE Motors team.
+Progetto VEAI (Intelligent Artisan Electric Vehicle), consists of a compact single-seater, renewable, 100% Open-Source and electric vehicle for the good of humanity developed by Ferrara Davide Giacomo and his TCVE Motors team.
 
 
 ## Acknowledgments
@@ -14,14 +14,9 @@ The VEAI Project (Intelligent Artisan Electric Vehicle), consists of a compact s
 - [Authors] [Ferrara Davide] ( https://github.com/FerraraDavideG )
 
 
-## Documentation
+## Full Documentation
 
-[Documentation] (https://drive.google.com/file/d/1WIrQb47PrjLjpMIPrqZszVo9VQTzwGDa/view)
-
-
-## Manual
-
-The user manual and guide for vehicle interaction called "VEAImanuale" or "VEAImanuale.pptx" included in this folder is subject to copyright and is not released as part of the open source due to security issues such as the diffusion of fake copies of the document, which could lead the end user to incorrect and dangerous use of the vehicle. All rights reserved © 2023 TCVE Motors.
+[Fulll Documentation] (https://drive.google.com/file/d/1WIrQb47PrjLjpMIPrqZszVo9VQTzwGDa/view)
 
 
 ## License
