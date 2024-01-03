@@ -1,28 +1,21 @@
 /*
-
   This software is part of Progetto VEAI, TCVE Motors, Ferrara Davide Giacomo.
   Software: veai.ino
   License: GNU General Public License v3
-
   -----------------------------------------------------------------------------
-
-  Copyright (C) 2023  Ferrara Davide Giacomo.
+  Copyright (C) 2023  TCVE Motors.
   
   This file is part of Progetto VEAI
-
   veai.ino is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
-
   veai.ino is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
-
   You should have received a copy of the GNU General Public License
   along with veai.ino. If not, see <http://www.gnu.org/licenses/>.
-
   -----------------------------------------------------------------------------
 */
 // LAST UPDATE: 03/01/2024 - Ferrara Davide Giacomo.
@@ -30,11 +23,11 @@
 #include <DHT.h>       // Includes the DHT library to use the DHT22 sensor.
 #include <MQ135.h>     // Includes the MQ135 library to use the MQ-135 sensor.
 
-#define DHTPIN 4       // DHT22 pin.
+#define DHTPIN 4       // DHT22 data pin.
 #define DHTTYPE DHT11  // DHT sensor type.
 DHT dht(DHTPIN, DHTTYPE);
 
-#define MQ135PIN A0    // MQ-135 sensor pin-
+#define MQ135PIN A0    // MQ-135 data pin.
 MQ135 mq135 = MQ135(MQ135PIN);
 
 int maxTM = 0;              // Variable to record the maximum temperature of TMP36GT9Z (engine)
