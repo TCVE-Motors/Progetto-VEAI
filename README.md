@@ -51,7 +51,7 @@ The component connections are configured as follows:
 - TMP36GT9Z sensors are connected to pins A2 & A4 for Motor and Motor Battery respectively on Arduino.
 - The buzzer is connected to pin 10 of the Arduino.
 - Arduino is connected via USB cable for serial communication to the Raspberry pi.
-- Raspberry pi is connected to the 10' Touchscreen via HDMI for multimedia and USB for touch and power.
+- Raspberry Pi is connected to the 10' Touchscreen via HDMI for multimedia and USB for touch and power.
 - To be continued!
 
 
