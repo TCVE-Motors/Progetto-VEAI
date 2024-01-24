@@ -54,6 +54,21 @@ The component connections are configured as follows:
 - Raspberry Pi is connected to the 10' Touchscreen via HDMI for multimedia and USB for touch and power.
 - To be continued!
 
+## Desclaimer
+
+IMPORTANT NOTE: These files are provided 'AS IS' and 'WITH ALL FAULTS'. TCVE Motors holds the intellectual rights to this work and offers it via Open-Source
+license GNU GPL 3.0. The use of this material is subject to the following conditions:
+
+- GNU GPL 3.0. conditions, found at: [ https://www.gnu.org/licenses/gpl-3.0.html#license-text ]
+
+- TCVE Motors disclaims all other warranties, express or implied, regarding this product.
+The customer must not rely on the absence or characteristics of any function or instruction marked 'reserved' or 'undefined'.
+TCVE Motors reserves the right to make changes to product specifications and descriptions at any time, without notice.
+
+- Please pay close attention to these provisions before using these files for any project.
+TCVE Motors acknowledges and asserts its intellectual rights in this work and encourages its sharing under the Open-Source terms.
+
+
 
 ## Feedback
 
