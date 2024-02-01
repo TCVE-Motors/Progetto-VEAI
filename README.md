@@ -29,9 +29,9 @@ Software: (Files like "veai.ino" and "VEAIgui") [GNU GPL-3.0] [ https://www.gnu.
 This project uses the following components:
 
 - VEVOR MY1020D (BLDC Motor 48V 2000W 2.67hp)
-- VEVOR BY15WF02-A (ECU for MY120D engine)
+- VEVOR BY15WF02-A (ECU for MY120D Motor)
 - Arduino Uno R4
-- Raspberry Pi 3B+
+- Raspberry Pi 5
 
 The specific code for Arduino and the computer are based on the project by Ferrara Davide Giacomo.
 
