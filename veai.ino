@@ -1,33 +1,40 @@
 /*
+
   This software is part of Progetto VEAI, TCVE Motors, Ferrara Davide Giacomo.
   Software: veai.ino
   License: GNU General Public License v3
+
   -----------------------------------------------------------------------------
-  Copyright (C) 2023  TCVE Motors.
+
+  Copyright (C) 2023  Ferrara Davide Giacomo.
   
   This file is part of Progetto VEAI
+
   veai.ino is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
+
   veai.ino is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
+
   You should have received a copy of the GNU General Public License
   along with veai.ino. If not, see <http://www.gnu.org/licenses/>.
+
   -----------------------------------------------------------------------------
 */
-// LAST UPDATE: 03/01/2024 - Ferrara Davide Giacomo.
+// LAST UPDATE: 02/02/2024 - Ferrara Davide Giacomo. V0.1
 
 #include <DHT.h>       // Includes the DHT library to use the DHT22 sensor.
 #include <MQ135.h>     // Includes the MQ135 library to use the MQ-135 sensor.
 
-#define DHTPIN 4       // DHT22 data pin.
+#define DHTPIN 4       // DHT22 pin.
 #define DHTTYPE DHT11  // DHT sensor type.
 DHT dht(DHTPIN, DHTTYPE);
 
-#define MQ135PIN A0    // MQ-135 data pin.
+#define MQ135PIN A0    // MQ-135 sensor pin.
 MQ135 mq135 = MQ135(MQ135PIN);
 
 int maxTM = 0;              // Variable to record the maximum temperature of TMP36GT9Z (engine)
@@ -54,8 +61,23 @@ const float circonferenzaRuotaM = circonferenzaRuotaCm / 100; // Variable for th
 int statoFiamma = 0; // Variable to identify the safety state (Fire)
 int statoFumo = 0;   // Variable to identify the safety state (Smoke)
 int statoTemp = 0;   // Variable to identify the safety state (Overheating)
+const int TrigPinRear = 7; // Variable to identify the Trig pin of the rear HC-SR04
+const int EchoPinRear = 8; // Variable to identify the Echo pin of the rear HC-SR04
+const int TrigPinFront = 7; // Variable to identify the Trig pin of the front HC-SR04
+const int EchoPinFront = 8; // Variable to identify the Echo pin of the front HC-SR04
+
+float DurationRear, DistanceRear;
+float DurationFront, DistanceFront;
 
 void setup() {
+
+  pinMode(TrigPinRear, OUTPUT);
+  pinMode(EchoPinRear, INPUT);
+  pinMode(TrigPinFront, OUTPUT);
+  pinMode(EchoPinFront, INPUT);
+
+
+
   Serial.begin(9600);          // Serial communication initialization, set at a rate of 9600 baud
   dht.begin();                 // DHT22 sensor initialization
   pinMode(flamePin, INPUT);    // Set pin as INPUT
@@ -67,17 +89,24 @@ void setup() {
 
 void loop() {
 
-  if (!Serial.available()) {        // Condition: Serial communication is unsuccessful
-    digitalWrite(vibrPin, HIGH);       // Activation of vibration on the steering wheel via dedicated motors.
-    tone(buzzerPin, 2000, 500);        // Effect: The speaker will be activated
-    delay(500);
-    tone(buzzerPin, 1500, 500);    
-    delay(500);
-    tone(buzzerPin, 1000, 500);
-    delay(500);
-    tone(buzzerPin, 500, 500);
-    delay(500);
-  }
+  digitalWrite(TrigPinRear, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TrigPinRear, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TrigPinRear, LOW);
+
+  digitalWrite(TrigPinFront, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TrigPinFront, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TrigPinFront, LOW);
+
+  DurationRear = pulseIn(EchoPinRear, HIGH);
+  DistanceRear = (DurationRear*.0343)/2;
+  DurationRear = pulseIn(EchoPinFront, HIGH);
+  DistanceRear = (DurationFront*.0343)/2;
+  
+
   digitalVal = digitalRead(flamePin);    // Declaration of variable value
   if (digitalVal == HIGH){               // Condition: Flame detected in the engine compartment
     digitalWrite(vibrPin, HIGH);         // Activation of vibration on the steering wheel via dedicated motors.
@@ -131,9 +160,9 @@ void loop() {
 
     // Use the elapsed time to calculate wheel speed or perform other operations
     rpm = (60.0 * 1000.0) / (tempoTrascorso * impulsiGiro);
-    // Calculate the distance covered in a minute (in meters)
+    // Calculate the DistanceRear covered in a minute (in meters)
     float distanzaPercorsaMetri = circonferenzaRuotaM * rpm * 60;
-    // Convert the distance covered in an hour (in kilometers)
+    // Convert the DistanceRear covered in an hour (in kilometers)
     Vel = distanzaPercorsaMetri / 1000;
 
     // Reset the initial time for the next calculation
@@ -194,6 +223,11 @@ void loop() {
   Serial.print(statoFiamma);
   Serial.print(statoFumo);
   Serial.print(statoTemp);
+
+  Serial.print("DistanceRear: ");
+  Serial.println(DistanceRear);
+  Serial.print("DistanceFront: ");
+  Serial.println(DistanceFront);
 
   Serial.println();
   delay(500);
