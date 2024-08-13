@@ -6,7 +6,7 @@
 
   -----------------------------------------------------------------------------
 
-  Copyright (C) 2023  Ferrara Davide Giacomo.
+  Copyright (C) 2024  Ferrara Davide Giacomo.
   
   This file is part of Progetto VEAI
 
