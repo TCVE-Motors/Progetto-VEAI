@@ -1,4 +1,5 @@
-The VEAI Project (Intelligent Artisan Electric Vehicle), consists of a compact double-seater, renewable, 100% Open-Source and electric vehicle developed by Ferrara Davide Giacomo and his TCVE Motors team to contribute to the electric transition, market revolution and pollution reduction.
+# The VEAI Project 
+(Intelligent Artisan Electric Vehicle), consists of a compact double-seater, renewable, 100% Open-Source and electric vehicle developed by Ferrara Davide Giacomo and his TCVE Motors team to contribute to the electric transition, market revolution and pollution reduction.
 
 # Acknowledgments
 [TCVE Motors official website] ( https://tcvemotors.com/ )
