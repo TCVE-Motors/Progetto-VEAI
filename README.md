@@ -41,7 +41,7 @@ The buzzer is connected to pin 10 of the Arduino.
 Arduino is connected via USB cable for serial communication to the Raspberry pi.
 Raspberry pi is connected to a 10' Touchscreen via HDMI for multimedia and USB for touch and power.
 
-#Feedback
+# Feedback
 We are always open to feedback and talking to the community.
 
 You can contact us via email at: helptcvemotors@gmail.com or through our website at https://tcvemotors.com/contact
