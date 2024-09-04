@@ -10,7 +10,7 @@
 [Documentation] (https://drive.google.com/file/d/1WIrQb47PrjLjpMIPrqZszVo9VQTzwGDa/view)
 
 # Manual
-The user manual and guide for vehicle interaction called "VEAImanuale" or "VEAImanuale.pptx" included in this folder is subject to copyright and is not released as part of the open source due to security issues such as the diffusion of fake copies of the document, which could lead the end user to incorrect and dangerous use of the vehicle. All rights reserved © 2023 TCVE Motors.
+The user manual and guide for vehicle interaction called "VEAImanuale" or "VEAImanuale.pptx" included in this folder is subject to copyright and is not released as part of the open source due to security issues such as the diffusion of fake copies of the document, which could lead the end user to incorrect and dangerous use of the vehicle. All rights reserved © 2024 TCVE Motors.
 
 # License
 Hardware: (General vehicle structure, electrical diagram and electronic configuration) [CERN-OHL-S V2] [ https://ohwr.org/cern_ohl_s_v2.txt ]
