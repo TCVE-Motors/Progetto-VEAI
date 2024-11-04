@@ -7,7 +7,7 @@
 # Authors
 [Authors] [Ferrara Davide] ( https://github.com/FerraraDavideG )
 # Documentation
-[Documentation] (https://drive.google.com/file/d/1WIrQb47PrjLjpMIPrqZszVo9VQTzwGDa/view)
+[Documentation] (https://github.com/TCVE-Motors/Progetto-VEAI)
 
 # Manual
 The user manual and guide for vehicle interaction called "VEAImanuale" or "VEAImanuale.pptx" included in this folder is subject to copyright and is not released as part of the open source due to security issues such as the diffusion of fake copies of the document, which could lead the end user to incorrect and dangerous use of the vehicle. All rights reserved © 2024 TCVE Motors.
