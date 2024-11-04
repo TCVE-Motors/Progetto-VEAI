@@ -29,17 +29,7 @@ The specific code for Arduino and the computer are based on the project by Ferra
 For further details on licenses and attributions, please see the relevant source files.
 
 # Wiring
-The component connections are configured as follows:
-
-The DHT-22 temperature and humidity sensor is connected to pin 4 of the Arduino.
-The KY-026 flame sensor is connected to pin 5 of the Arduino.
-The MQ-135 gas sensor is connected to pin A0 of Arduino.
-The KY-035 hall effect sensor is connected to pin 3 of the Arduino.
-The ultrasonic sensor HCSR04 is connected to pins 7 and 8 of the Arduino.
-TMP36GT9Z sensors are connected to pins A2 & A4 for Motor and Motor Battery respectively on Arduino.
-The buzzer is connected to pin 10 of the Arduino.
-Arduino is connected via USB cable for serial communication to the Raspberry pi.
-Raspberry pi is connected to a 10' Touchscreen via HDMI for multimedia and USB for touch and power.
+The component connections are configured as showed in the schematics. A description will soon be available.
 
 # Feedback
 We are always open to feedback and talking to the community.
