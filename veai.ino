@@ -30,6 +30,10 @@
 #include <DHT.h>       // Includes the DHT library to use the DHT22 sensor.
 #include <MQ135.h>     // Includes the MQ135 library to use the MQ-135 sensor.
 
+#define MOSFET_CABIN     6 // Cabin lighting MOSFET's output pin
+#define MOSFET_EXTERNAL  7 // External lighting MOSFET's output pin
+#define MOSFET_FANS      8 // Cabin fans MOSFET's output pin
+#define MOSFET_HEATING   9 // Cabin heating MOSFET's output pin
 #define DHTPIN 4       // DHT11 pin.
 #define DHTTYPE DHT11  // DHT sensor type.
 DHT dht(DHTPIN, DHTTYPE);
@@ -41,8 +45,9 @@ struct Sensor {
   const char* name;
   float value;
 };
-
 #define NUM_SENSORS 10
+
+
 Sensor sensors[NUM_SENSORS] = {
     {0, "EngineRR Temp", 0},
     {1, "EngineFR Temp", 0},
@@ -55,6 +60,15 @@ Sensor sensors[NUM_SENSORS] = {
     {8, "RPM", 0},
     {9, "Flame", 0},
 };
+
+const int NUM_MOSFETS = 4;
+int mosfetPins[NUM_MOSFETS] = {
+    MOSFET_CABIN,
+    MOSFET_EXTERNAL,
+    MOSFET_FANS,
+    MOSFET_HEATING
+};
+int mosfetStates[NUM_MOSFETS] = {0,0,0,0}; // store current state
 
 const int flamePin = 5;
 const int hallPin = 2;
@@ -79,6 +93,29 @@ void setup() {
     pinMode(flamePin, INPUT);
     pinMode(hallPin, INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(hallPin), hallISR, RISING);
+    // Set MOSFET pins as outputs
+    for (int i = 0; i < NUM_MOSFETS; i++) {
+        pinMode(mosfetPins[i], OUTPUT);
+        digitalWrite(mosfetPins[i], LOW); // all OFF at startup
+    }
+}
+
+void handleCommands() {
+    if (Serial.available()) {
+        String cmd = Serial.readStringUntil('\n');  // read one command line
+        cmd.trim();
+
+        int commaIndex = cmd.indexOf(',');
+        if (commaIndex > 0) {
+            int device = cmd.substring(0, commaIndex).toInt();
+            int state  = cmd.substring(commaIndex + 1).toInt();
+
+            if (device >= 0 && device < NUM_MOSFETS) {
+                mosfetStates[device] = state ? 1 : 0;
+                digitalWrite(mosfetPins[device], mosfetStates[device] ? HIGH : LOW);
+            }
+        }
+    }
 }
 
 void readSensors() {
@@ -141,6 +178,7 @@ void sendAllSensors() {
 }
 
 void loop() {
+    handleCommands();   // check if Pi sent a command
     readSensors();     // just read the raw sensor values
     sendAllSensors();  // send all sensor data to Raspberry Pi
     delay(100);        // adjust frequency (e.g., 10 Hz)
