@@ -25,210 +25,123 @@
 
   -----------------------------------------------------------------------------
 */
-// LAST UPDATE: 02/02/2024 - Ferrara Davide Giacomo. V0.1
+// LAST UPDATE: 26/08/2025 - Ferrara Davide Giacomo. V0.1.1
 
 #include <DHT.h>       // Includes the DHT library to use the DHT22 sensor.
 #include <MQ135.h>     // Includes the MQ135 library to use the MQ-135 sensor.
 
-#define DHTPIN 4       // DHT22 pin.
+#define DHTPIN 4       // DHT11 pin.
 #define DHTTYPE DHT11  // DHT sensor type.
 DHT dht(DHTPIN, DHTTYPE);
-
 #define MQ135PIN A0    // MQ-135 sensor pin.
 MQ135 mq135 = MQ135(MQ135PIN);
 
-int maxTM = 0;              // Variable to record the maximum temperature of TMP36GT9Z (engine)
-int maxG = 0;               // Variable to record the maximum RPM of KY-035 (rpm)
-int maxVel = 0;             // Variable to record the maximum speed
-int Vel = 0;                // Variable to record the speed
-const int buzzerPin = 10;   // Pin variable for the buzzer
-const int flamePin = 5;     // Pin variable for KY-026 sensor (flame)
-const int hallPin = 2;      // Pin variable for KY-035 sensor (rpm)
-const int vibrPin = 3;      // Pin variable for the vibrating motor on the steering wheel in case of an alarm
-int digitalVal = 0;         // Variable for the digital value of KY-026 sensor (flame)
-float tempM = 0;            // Variable to record real-time temperature of TMP36GT9Z (engine)
-float tempE = 0;            // Variable to record real-time temperature of DHT11 (environment)
-float tempBM = 0;           // Variable to record real-time temperature of TMP36GT9Z (engine batteries)
-float umi = 0;              // Variable to record real-time humidity of DHT11 (environment)
-int rpm = 0;                // Variable to record real-time RPM of KY-035 (rpm)
-float Co2 = 0;              // Variable to record real-time CO2 concentration of MQ135 (environment)
-unsigned long tempoIniziale = 0;   // Variable to initialize the initial time from KY-035 sensor pulses (rpm)
-const int impulsiGiro = 1;         // Variable to declare how many pulses correspond to 1 wheel rotation
-const float pi = 3.14159;          // Variable to specify the value of pi
-const float diametroRuotaCm = 39;  // Variable to declare the wheel diameter in centimeters
-const float circonferenzaRuotaCm = pi * diametroRuotaCm;      // Variable for the wheel circumference in centimeters
-const float circonferenzaRuotaM = circonferenzaRuotaCm / 100; // Variable for the wheel circumference in meters
-int statoFiamma = 0; // Variable to identify the safety state (Fire)
-int statoFumo = 0;   // Variable to identify the safety state (Smoke)
-int statoTemp = 0;   // Variable to identify the safety state (Overheating)
-const int TrigPinRear = 7; // Variable to identify the Trig pin of the rear HC-SR04
-const int EchoPinRear = 8; // Variable to identify the Echo pin of the rear HC-SR04
-const int TrigPinFront = 7; // Variable to identify the Trig pin of the front HC-SR04
-const int EchoPinFront = 8; // Variable to identify the Echo pin of the front HC-SR04
+struct Sensor {
+  uint8_t id;
+  const char* name;
+  float value;
+};
 
-float DurationRear, DistanceRear;
-float DurationFront, DistanceFront;
+#define NUM_SENSORS 10
+Sensor sensors[NUM_SENSORS] = {
+    {0, "EngineRR Temp", 0},
+    {1, "EngineFR Temp", 0},
+    {2, "EngineRL Temp", 0},
+    {3, "EngineFL Temp", 0},
+    {4, "Battery Temp", 0},
+    {5, "Env Temp", 0},
+    {6, "Env Humi", 0},
+    {7, "CO2", 0},
+    {8, "RPM", 0},
+    {9, "Flame", 0},
+};
+
+const int flamePin = 5;
+const int hallPin = 2;
+
+volatile unsigned long lastPulseTime = 0;
+volatile unsigned int rpm = 0;
+const int impulsesPerRevolution = 1;
+
+void hallISR() {
+    unsigned long now = micros();  // higher precision
+    unsigned long delta = now - lastPulseTime; // microseconds
+    if (delta > 0) {
+        rpm = 60.0 * 1e6 / (delta * impulsesPerRevolution); 
+    }
+    lastPulseTime = now;
+}
+
 
 void setup() {
+    Serial.begin(115200);
+    dht.begin();
+    pinMode(flamePin, INPUT);
+    pinMode(hallPin, INPUT_PULLUP);
+    attachInterrupt(digitalPinToInterrupt(hallPin), hallISR, RISING);
+}
 
-  pinMode(TrigPinRear, OUTPUT);
-  pinMode(EchoPinRear, INPUT);
-  pinMode(TrigPinFront, OUTPUT);
-  pinMode(EchoPinFront, INPUT);
+void readSensors() {
+    // Engine temps (TMP36GT9Z sensors)
+    sensors[0].value = analogRead(A0); // EngineRR Temp
+    sensors[1].value = analogRead(A1); // EngineFR Temp
+    sensors[2].value = analogRead(A2); // EngineRL Temp
+    sensors[3].value = analogRead(A3); // EngineFL Temp
 
+    // Battery temp
+    sensors[4].value = analogRead(A4);
 
+    // DHT11 sensors
+    sensors[5].value = dht.readTemperature();
+    sensors[6].value = dht.readHumidity();
 
-  Serial.begin(9600);          // Serial communication initialization, set at a rate of 9600 baud
-  dht.begin();                 // DHT22 sensor initialization
-  pinMode(flamePin, INPUT);    // Set pin as INPUT
-  pinMode(MQ135PIN, INPUT);    // Set pin as INPUT
-  pinMode(hallPin, INPUT);     // Set pin as INPUT
-  pinMode(buzzerPin, OUTPUT);  // Set pin as OUTPUT
-  tempoIniziale = millis();    // Declaration of variable value
+    // CO2
+    // sensors[7].value = mq135.getPPM(); ERROR: DEDICATED ANALOG PIN NEEDED, CONFLICT WITH SENSOR 0
+
+    // RPM / Speed – raw hall sensor state
+    sensors[8].value = rpm; // Pi will calculate RPM
+
+    // Flame
+    sensors[9].value = analogRead(A5);
+}
+
+void sendSensorFrame(Sensor s) {
+    uint8_t frame[12];
+    frame[0] = 0xAA;  // STX
+    frame[1] = s.id;
+
+    uint16_t val = (uint16_t)(s.value * 10);  // cast to 16-bit integer, increase size by 10 to avoid decimal truncation
+    frame[2] = val >> 8;
+    frame[3] = val & 0xFF;
+
+    // Timestamp (Pi will update later, but could include RTC if available)
+    int year = 2025, month = 8, day = 26, hour = 14, minute = 30, second = 0;
+    frame[4] = year - 2000;
+    frame[5] = month;
+    frame[6] = day;
+    frame[7] = hour;
+    frame[8] = minute;
+    frame[9] = second;
+
+    // Checksum
+    uint8_t chk = 0;
+    for (int i = 1; i <= 9; i++) chk ^= frame[i];
+    frame[10] = chk;
+
+    frame[11] = 0x55; // ETX
+
+    Serial.write(frame, 12);
+}
+
+void sendAllSensors() {
+    for (int i = 0; i < NUM_SENSORS; i++) {
+        sendSensorFrame(sensors[i]);
+        delay(5); // small delay to avoid UART overflow
+    }
 }
 
 void loop() {
-
-  digitalWrite(TrigPinRear, LOW);
-  delayMicroseconds(2);
-  digitalWrite(TrigPinRear, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(TrigPinRear, LOW);
-
-  digitalWrite(TrigPinFront, LOW);
-  delayMicroseconds(2);
-  digitalWrite(TrigPinFront, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(TrigPinFront, LOW);
-
-  DurationRear = pulseIn(EchoPinRear, HIGH);
-  DistanceRear = (DurationRear*.0343)/2;
-  DurationRear = pulseIn(EchoPinFront, HIGH);
-  DistanceRear = (DurationFront*.0343)/2;
-  
-
-  digitalVal = digitalRead(flamePin);    // Declaration of variable value
-  if (digitalVal == HIGH){               // Condition: Flame detected in the engine compartment
-    digitalWrite(vibrPin, HIGH);         // Activation of vibration on the steering wheel via dedicated motors.
-    tone(buzzerPin, 1500, 500);          // Effect: The speaker will be activated
-    delay(500);
-    tone(buzzerPin, 1000, 500);
-    delay(500);
-    tone(buzzerPin, 500, 500);
-    delay(500);
-    statoFiamma = 1;
-  }
-
-  if (Co2 > 800) {                     // Condition: CO2 concentration exceeds 800 ppm
-    digitalWrite(vibrPin, HIGH);       // Activation of vibration on the steering wheel via dedicated motors.
-    tone(buzzerPin, 1500, 500);        // Effect: The speaker will be activated
-    delay(500);
-    tone(buzzerPin, 1000, 500);
-    delay(500);
-    statoFumo = 1;
-  }
-
-  if (tempM > 80) {                    // Condition: Engine temperature exceeds 80°C
-    digitalWrite(vibrPin, HIGH);       // Activation of vibration on the steering wheel via dedicated motors.
-    tone(buzzerPin, 1500, 500);        // Effect: The speaker will be activated
-    delay(500);
-    statoTemp = 1;
-  }
-
-  if (tempBM > 60) {                   // Condition: Engine battery temperature exceeds 60°C
-    digitalWrite(vibrPin, HIGH);       // Activation of vibration on the steering wheel via dedicated motors.
-    tone(buzzerPin, 1500, 500);        // Effect: The speaker will be activated
-    delay(500);
-    statoTemp = 1;
-  }
-
-  // Acquiring data from DHT11 sensor
-  tempE = dht.readTemperature();
-  umi = dht.readHumidity();
-
-  // Acquiring data from MQ-135 sensor
-  Co2 = mq135.getPPM();
-
-  // Acquiring data from TMP36GT9Z sensor
-  tempM = (analogRead(A2) * 0.48828125 - 50.0);
-  tempBM = (analogRead(A4) * 0.01 - 50.0);
-
-  // Check if the KY-035 hall sensor has sent a signal (complete wheel rotation)
-  if (digitalRead(hallPin) == HIGH) {
-    // Calculate the time elapsed since the program started
-    unsigned long tempoTrascorso = millis() - tempoIniziale;
-
-    // Use the elapsed time to calculate wheel speed or perform other operations
-    rpm = (60.0 * 1000.0) / (tempoTrascorso * impulsiGiro);
-    // Calculate the DistanceRear covered in a minute (in meters)
-    float distanzaPercorsaMetri = circonferenzaRuotaM * rpm * 60;
-    // Convert the DistanceRear covered in an hour (in kilometers)
-    Vel = distanzaPercorsaMetri / 1000;
-
-    // Reset the initial time for the next calculation
-    tempoIniziale = millis();
-  }
-
-  // Check and record maximum values
-  if (tempM > maxTM) {
-    maxTM = tempM;
-  }
-  if (rpm > maxG) {
-    maxG = rpm;
-  }
-  if (Vel > maxVel) {
-    maxVel = Vel;
-  }
-
-  // Print real-time values to serial for display communication
-  Serial.print(" Temperatura motore: ");
-  Serial.print(tempM);
-  Serial.print(" °C");
-
-  Serial.print(" Temperatura Motore Massima: ");
-  Serial.print(maxTM);
-  Serial.print(" °C");
-
-  Serial.print(" Temperatura Batterie Motore: ");
-  Serial.print(tempBM);
-  Serial.print(" °C");
-
-  Serial.print(" Temperatura Esterna: ");
-  Serial.print(tempE);
-  Serial.print(" °C");
-
-  Serial.print(" Umidità: ");
-  Serial.print(umi);
-  Serial.print(" %");
-
-  Serial.print(" Concentrazione di CO2: ");
-  Serial.print(Co2);
-  Serial.print(" PPM");
-
-  Serial.print(" RPM: ");
-  Serial.print(rpm);
-
-  Serial.print(" RPM Massimi: ");
-  Serial.print(maxG);
-
-  Serial.print(" Velocità: ");
-  Serial.print(Vel);
-  Serial.print(" Km/h");
-
-  Serial.print(" Velocità Massima: ");
-  Serial.print(maxVel);
-  Serial.print(" Km/h");
-
-  Serial.print(" Stato allarmi: ");
-  Serial.print(statoFiamma);
-  Serial.print(statoFumo);
-  Serial.print(statoTemp);
-
-  Serial.print("DistanceRear: ");
-  Serial.println(DistanceRear);
-  Serial.print("DistanceFront: ");
-  Serial.println(DistanceFront);
-
-  Serial.println();
-  delay(500);
+    readSensors();     // just read the raw sensor values
+    sendAllSensors();  // send all sensor data to Raspberry Pi
+    delay(100);        // adjust frequency (e.g., 10 Hz)
 }
